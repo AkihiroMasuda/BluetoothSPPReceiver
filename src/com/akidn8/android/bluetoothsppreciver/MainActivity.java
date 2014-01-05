@@ -71,6 +71,7 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        this.finish();
     }
     
     private void initBT(){
