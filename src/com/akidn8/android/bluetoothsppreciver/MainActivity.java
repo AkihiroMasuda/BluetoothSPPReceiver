@@ -24,20 +24,19 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-	// ログ出力用TAG
-    private static final String LOG_TAG ="BT_SPP_Receiver";
-    
-    // Bluetooth通信用
+    // Bluetoothデバイス
     private BluetoothDevice btDevice;
+    //　Bluetooth通信ソケット
     private BluetoothSocket btSocket;
- 
     // Bluetoothデータ受信スレッド 
     private Thread threadBTCom; 
     // スレッド終了フラグ
     boolean halt = false;
- 
     //TextViewに表示する文字列
     public String str_txtview = ""; 
+    
+	// ログ出力用TAG
+    private static final String LOG_TAG ="BT_SPP_Receiver";
     
     @Override
     public void onResume(){
@@ -56,14 +55,16 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        // スレッド終了フラグ
+        // スレッド終了フラグON
         halt = true;
-        // スレッドが終わった頃を見計らってソケット終了とアプリ終了を実行
+        // スレッドが終わった頃を見計らってソケット終了とアプリ終了を実行するため、遅延実行させる
         new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
 		        try {
+		        	// 通信ソケット終了
 		            btSocket.close();
+		            // アプリ終了
 		            MainActivity.this.finish();
 		        } catch (IOException e) {
 		            e.printStackTrace();
@@ -72,6 +73,7 @@ public class MainActivity extends Activity {
 		},1000); 
     }
     
+    // Bluetoothデバイス選択ダイアログ表示
     private void showBTDeviceSeclectDialog(){
 
         // Android端末ローカルのBTアダプタを取得
@@ -86,17 +88,15 @@ public class MainActivity extends Activity {
           btDevice = it.next();
           Log.d(LOG_TAG, "btAddr = " + btDevice.getAddress());
           Log.d(LOG_TAG, "btAddr = " + btDevice.getName());
-          
           item_list.add(btDevice.getName());
         }
 
-        //
-        //処理：メッセージダイアログの表示
-        //
+        //メッセージダイアログの表示
         new AlertDialog.Builder(MainActivity.this)
         .setTitle("BTデバイス選択")
         .setItems(item_list.toArray(new String[item_list.size()]), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
+            	//// デバイス選択時の処理
                 // 選択したBluetoothDeviceを保持
                 BluetoothDevice devices[] = btDeviceSet.toArray(new BluetoothDevice[btDeviceSet.size()]);
                 btDevice = devices[which];
@@ -107,20 +107,26 @@ public class MainActivity extends Activity {
         .show();
     }
     
+    // Bluetoothデバイスとの通信開始。画面更新タイマー起動。
     private void startCommunication(){
+    	// Bluetoothデバイスとの通信確立
     	if (tryBTConnection()){
+    		// 通信成功
     		Log.d(LOG_TAG, "Connected.");
-    		
-            Handler handler = new Handler();
-            threadBTCom = createBTComThread(handler);
+            Toast.makeText(this, btDevice.getName() + "  connected", Toast.LENGTH_SHORT).show();
+            // 通信スレッド起動
+            threadBTCom = createBTComThread();
             threadBTCom.start();
-            startUIUpdater(handler);
+            // 画面更新タイマー起動
+            startDisplayUpdater();
     	}else{
+    		// 通信失敗
     		Log.e(LOG_TAG, "Bluetooth device connection if failed.");
+            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
     	}
-    	
     }
     
+    // Bluetoothデバイスとの通信経路確立
     private boolean tryBTConnection(){
         try {
 			BluetoothDevice hxm = btDevice;
@@ -128,67 +134,64 @@ public class MainActivity extends Activity {
 			m = hxm.getClass().getMethod("createRfcommSocket", new Class[]{int.class});
 			btSocket = (BluetoothSocket)m.invoke(hxm, Integer.valueOf(1)); 
 			btSocket.connect();
-            Toast.makeText(this, btDevice.getName() + "  connected", Toast.LENGTH_SHORT).show();
             return true;
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
         } catch (SecurityException e) {
 			e.printStackTrace();
-            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
-            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
-            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
-            Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
 		}
         return false;
     }
-    
-    private Thread createBTComThread(final Handler handler){
-    	
+
+    // Bluetoothデバイスとの通信スレッド作成
+    private Thread createBTComThread(){
     	return new Thread(new Runnable() {
             @Override
             public void run() {
+            	// 通信スレッド処理本体
                 try {
                 	while(!halt){
-                		if (btSocket!=null){
-        					InputStream inStream = btSocket.getInputStream();
-        					int size=0;
-        					int maxsize = 1024;
-        					final byte[] buffer = new byte[maxsize];
-        					while(!halt){
-        						// 改行コードが出てくるまで読み込み続ける
-        						if (size+1 > maxsize){
-        							//これ以上は読めない
-        							//エラー
-        							break;
-        						}
-        						// 読み込み
-        						int rsize = inStream.read(buffer, size, 1);
+                		// データ受信初期化(改行コード検出でリセットすべき処理）
+    					InputStream inStream = btSocket.getInputStream(); //データ受信用ストリーム
+    					int size=0; //受信データサイズ
+    					int maxsize = 1024; //最大受信データサイズ
+    					final byte[] buffer = new byte[maxsize]; //受信データバッファ
 
-    							//改行が出てきたか判断
-        						final int CODE_LF = 10; //改行コード
-        						size  = size + rsize;
-        						if (buffer[size-1]==CODE_LF){
-        							// 改行が出てきたら、表示文字列を編集してwhile抜ける
-        							String str = new String(buffer);
-        							str_txtview = str.substring(0, size) + str_txtview;
-        							final int str_txtview_maxlen =  1024*20;
-        							if (str_txtview.length() > str_txtview_maxlen){
-        								//TextViewに表示する文字列が長すぎる時は後ろ部分を切り捨てる
-        								str_txtview = str_txtview.substring(0, str_txtview_maxlen); 
-        							}
-        							break;
-        						}
-        					}
+    					// 改行コードが出てくるまで読み込み続ける
+    					while(!halt){
+    						// 読み込み
+    						int rsize = inStream.read(buffer, size, 1);
+
+							//改行が出てきたか判断
+    						final int CODE_LF = 10; //改行コード
+    						size  = size + rsize; //読み込みサイズ更新
+    						if (buffer[size-1]==CODE_LF){
+    							// 改行が出てきたら、表示文字列を編集してwhile抜ける
+    							String str = new String(buffer);
+    							str_txtview = str.substring(0, size) + str_txtview;
+    							final int str_txtview_maxlen =  1024*20;
+    							if (str_txtview.length() > str_txtview_maxlen){
+    								//TextViewに表示する文字列が長すぎる時は後ろ部分を切り捨てる
+    								str_txtview = str_txtview.substring(0, str_txtview_maxlen); 
+    							}
+    							// 次のデータを待つためデータ受信初期化を行うべくbreak
+    							break;
+    						}else if (size+1 > maxsize){
+        						// 改行が出ないまま読み込みサイズが閾値以上になったらエラーと判断して読み込み放棄
+    		                	Log.e(LOG_TAG, "Data length is too long.");
+    							break;
+    						}else{
+    							// 改行がまだ出ない、且つ、受信データサイズに余裕あり
+    							// 次のデータを受信するべく、ここでは何もしない
+    						}
                 		}
                 	}
                 	Log.d(LOG_TAG, "Thread ends.");
@@ -200,15 +203,22 @@ public class MainActivity extends Activity {
         });
     }
     
-    // UI描画用タイマー生成
-    private void startUIUpdater(final Handler handler){
+    // 画面更新タイマー起動
+    private void startDisplayUpdater(){
+    	// 一定間隔毎に実行したい処理の定義
 		final TextView tv = (TextView)findViewById(R.id.txtMain);
 		final Runnable updateUI = new Runnable(){
 			@Override
 			public void run() {
+				// TextViewの文字列を更新
 				tv.setText(str_txtview);
 			}
 		};
+		
+		// タイマー作成と起動
+		// 一定期間毎に画面更新処理を実行
+		long period = 50; //画面更新間隔
+		final Handler handler = new Handler();
     	Timer timer = new Timer();
     	timer.schedule(new TimerTask(){
 			@Override
@@ -216,7 +226,7 @@ public class MainActivity extends Activity {
 				handler.removeCallbacks(updateUI);
 				handler.post(updateUI);
 			}
-    	}, 0, 50);
+    	}, 0, period);
     }
 	
 }
