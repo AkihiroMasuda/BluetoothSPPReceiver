@@ -1,7 +1,5 @@
 package com.akidn8.android.bluetoothsppreciver;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -10,7 +8,6 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -19,7 +16,6 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Menu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,9 +23,6 @@ public class MainActivity extends Activity {
 
 	// ログ出力用TAG
     private static final String LOG_TAG ="BT_Arduino";
-    
-    // SPPで繋げる時のUUIDは決まっている模様
-    private UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     
     // Bluetooth通信用
     private BluetoothDevice btDevice;
