@@ -1,4 +1,4 @@
-package com.akidn8.android.bluetoothsppreciver;
+package com.akidn8.android.bluetoothsppreceiver;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.akidn8.android.bluetoothsppreceiver.R;
 
 import android.app.Activity;
 import android.app.AlertDialog;
