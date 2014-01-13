@@ -1,3 +1,8 @@
+/**
+ * Bluetooth機器とSPPで通信する
+ * データ受信機能のみ
+ */
+
 package com.akidn8.android.bluetoothsppreceiver;
 
 import java.io.IOException;
