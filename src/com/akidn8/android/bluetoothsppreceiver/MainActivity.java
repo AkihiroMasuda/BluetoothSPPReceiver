@@ -1,6 +1,6 @@
 /**
- * Bluetooth‹@Ší‚ÆSPP‚Å’ÊM‚·‚é
- * ƒf[ƒ^óM‹@”\‚Ì‚İ
+ * Bluetoothæ©Ÿå™¨ã¨SPPã§é€šä¿¡ã™ã‚‹
+ * ãƒ‡ãƒ¼ã‚¿å—ä¿¡æ©Ÿèƒ½ã®ã¿
  */
 
 package com.akidn8.android.bluetoothsppreceiver;
@@ -31,18 +31,18 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
-    // BluetoothƒfƒoƒCƒX
+    // Bluetoothãƒ‡ãƒã‚¤ã‚¹
     private BluetoothDevice btDevice;
-    //@Bluetooth’ÊMƒ\ƒPƒbƒg
+    //ã€€Bluetoothé€šä¿¡ã‚½ã‚±ãƒƒãƒˆ
     private BluetoothSocket btSocket;
-    // Bluetoothƒf[ƒ^óMƒXƒŒƒbƒh 
+    // Bluetoothãƒ‡ãƒ¼ã‚¿å—ä¿¡ã‚¹ãƒ¬ãƒƒãƒ‰ 
     private Thread threadBTCom; 
-    // ƒXƒŒƒbƒhI—¹ƒtƒ‰ƒO
+    // ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ãƒ•ãƒ©ã‚°
     boolean halt = false;
-    //TextView‚É•\¦‚·‚é•¶š—ñ
+    //TextViewã«è¡¨ç¤ºã™ã‚‹æ–‡å­—åˆ—
     public String str_txtview = ""; 
     
-	// ƒƒOo—Í—pTAG
+	// ãƒ­ã‚°å‡ºåŠ›ç”¨TAG
     private static final String LOG_TAG ="BT_SPP_Receiver";
     
     @Override
@@ -55,23 +55,23 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //BluetoothƒfƒoƒCƒX‘I‘ğ—pƒ_ƒCƒAƒƒO‚ğ•\¦
+        //Bluetoothãƒ‡ãƒã‚¤ã‚¹é¸æŠç”¨ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã‚’è¡¨ç¤º
         showBTDeviceSeclectDialog();
     }
     
     @Override
     protected void onPause() {
         super.onPause();
-        // ƒXƒŒƒbƒhI—¹ƒtƒ‰ƒOON
+        // ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ãƒ•ãƒ©ã‚°ON
         halt = true;
-        // ƒXƒŒƒbƒh‚ªI‚í‚Á‚½ ‚ğŒ©Œv‚ç‚Á‚Äƒ\ƒPƒbƒgI—¹‚ÆƒAƒvƒŠI—¹‚ğÀs‚·‚é‚½‚ßA’x‰„Às‚³‚¹‚é
+        // ã‚¹ãƒ¬ãƒƒãƒ‰ãŒçµ‚ã‚ã£ãŸé ƒã‚’è¦‹è¨ˆã‚‰ã£ã¦ã‚½ã‚±ãƒƒãƒˆçµ‚äº†ã¨ã‚¢ãƒ—ãƒªçµ‚äº†ã‚’å®Ÿè¡Œã™ã‚‹ãŸã‚ã€é…å»¶å®Ÿè¡Œã•ã›ã‚‹
         new Handler().postDelayed(new Runnable() {
 			@Override
 			public void run() {
 		        try {
-		        	// ’ÊMƒ\ƒPƒbƒgI—¹
+		        	// é€šä¿¡ã‚½ã‚±ãƒƒãƒˆçµ‚äº†
 		            btSocket.close();
-		            // ƒAƒvƒŠI—¹
+		            // ã‚¢ãƒ—ãƒªçµ‚äº†
 		            MainActivity.this.finish();
 		        } catch (IOException e) {
 		            e.printStackTrace();
@@ -80,15 +80,15 @@ public class MainActivity extends Activity {
 		},1000); 
     }
     
-    // BluetoothƒfƒoƒCƒX‘I‘ğƒ_ƒCƒAƒƒO•\¦
+    // Bluetoothãƒ‡ãƒã‚¤ã‚¹é¸æŠãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤º
     private void showBTDeviceSeclectDialog(){
 
-        // Android’[––ƒ[ƒJƒ‹‚ÌBTƒAƒ_ƒvƒ^‚ğæ“¾
+        // Androidç«¯æœ«ãƒ­ãƒ¼ã‚«ãƒ«ã®BTã‚¢ãƒ€ãƒ—ã‚¿ã‚’å–å¾—
         BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
-        // ƒyƒAƒŠƒ“ƒOÏ‚İ‚ÌƒfƒoƒCƒXˆê——‚ğæ“¾
+        // ãƒšã‚¢ãƒªãƒ³ã‚°æ¸ˆã¿ã®ãƒ‡ãƒã‚¤ã‚¹ä¸€è¦§ã‚’å–å¾—
         final Set<BluetoothDevice> btDeviceSet = btAdapter.getBondedDevices();
  
-        // ƒfƒoƒCƒX–¼‚ğæ“¾‚µ‚Äƒ_ƒCƒAƒƒO•\¦—p‚Ì•¶š—ñ‚ğì¬
+        // ãƒ‡ãƒã‚¤ã‚¹åã‚’å–å¾—ã—ã¦ãƒ€ã‚¤ã‚¢ãƒ­ã‚°è¡¨ç¤ºç”¨ã®æ–‡å­—åˆ—ã‚’ä½œæˆ
         Iterator<BluetoothDevice> it = btDeviceSet.iterator();
         final ArrayList<String> item_list = new ArrayList<String>();
         while(it.hasNext()){
@@ -98,42 +98,42 @@ public class MainActivity extends Activity {
           item_list.add(btDevice.getName());
         }
 
-        //ƒƒbƒZ[ƒWƒ_ƒCƒAƒƒO‚Ì•\¦
+        //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒ€ã‚¤ã‚¢ãƒ­ã‚°ã®è¡¨ç¤º
         new AlertDialog.Builder(MainActivity.this)
-        .setTitle("BTƒfƒoƒCƒX‘I‘ğ")
+        .setTitle("BTãƒ‡ãƒã‚¤ã‚¹é¸æŠ")
         .setItems(item_list.toArray(new String[item_list.size()]), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-            	//// ƒfƒoƒCƒX‘I‘ğ‚Ìˆ—
-                // ‘I‘ğ‚µ‚½BluetoothDevice‚ğ•Û
+            	//// ãƒ‡ãƒã‚¤ã‚¹é¸æŠæ™‚ã®å‡¦ç†
+                // é¸æŠã—ãŸBluetoothDeviceã‚’ä¿æŒ
                 BluetoothDevice devices[] = btDeviceSet.toArray(new BluetoothDevice[btDeviceSet.size()]);
                 btDevice = devices[which];
-                // Bluetooth’ÊMˆ—‚ğŠJn
+                // Bluetoothé€šä¿¡å‡¦ç†ã‚’é–‹å§‹
                 startCommunication();
             }
         })
         .show();
     }
     
-    // BluetoothƒfƒoƒCƒX‚Æ‚Ì’ÊMŠJnB‰æ–ÊXVƒ^ƒCƒ}[‹N“®B
+    // Bluetoothãƒ‡ãƒã‚¤ã‚¹ã¨ã®é€šä¿¡é–‹å§‹ã€‚ç”»é¢æ›´æ–°ã‚¿ã‚¤ãƒãƒ¼èµ·å‹•ã€‚
     private void startCommunication(){
-    	// BluetoothƒfƒoƒCƒX‚Æ‚Ì’ÊMŠm—§
+    	// Bluetoothãƒ‡ãƒã‚¤ã‚¹ã¨ã®é€šä¿¡ç¢ºç«‹
     	if (tryBTConnection()){
-    		// ’ÊM¬Œ÷
+    		// é€šä¿¡æˆåŠŸ
     		Log.d(LOG_TAG, "Connected.");
             Toast.makeText(this, btDevice.getName() + "  connected", Toast.LENGTH_SHORT).show();
-            // ’ÊMƒXƒŒƒbƒh‹N“®
+            // é€šä¿¡ã‚¹ãƒ¬ãƒƒãƒ‰èµ·å‹•
             threadBTCom = createBTComThread();
             threadBTCom.start();
-            // ‰æ–ÊXVƒ^ƒCƒ}[‹N“®
+            // ç”»é¢æ›´æ–°ã‚¿ã‚¤ãƒãƒ¼èµ·å‹•
             startDisplayUpdater();
     	}else{
-    		// ’ÊM¸”s
+    		// é€šä¿¡å¤±æ•—
     		Log.e(LOG_TAG, "Bluetooth device connection if failed.");
             Toast.makeText(this, "Connection Failed", Toast.LENGTH_SHORT).show();
     	}
     }
     
-    // BluetoothƒfƒoƒCƒX‚Æ‚Ì’ÊMŒo˜HŠm—§
+    // Bluetoothãƒ‡ãƒã‚¤ã‚¹ã¨ã®é€šä¿¡çµŒè·¯ç¢ºç«‹
     private boolean tryBTConnection(){
         try {
 			BluetoothDevice hxm = btDevice;
@@ -158,46 +158,46 @@ public class MainActivity extends Activity {
         return false;
     }
 
-    // BluetoothƒfƒoƒCƒX‚Æ‚Ì’ÊMƒXƒŒƒbƒhì¬
+    // Bluetoothãƒ‡ãƒã‚¤ã‚¹ã¨ã®é€šä¿¡ã‚¹ãƒ¬ãƒƒãƒ‰ä½œæˆ
     private Thread createBTComThread(){
     	return new Thread(new Runnable() {
             @Override
             public void run() {
-            	// ’ÊMƒXƒŒƒbƒhˆ—–{‘Ì
+            	// é€šä¿¡ã‚¹ãƒ¬ãƒƒãƒ‰å‡¦ç†æœ¬ä½“
                 try {
                 	while(!halt){
-                		// ƒf[ƒ^óM‰Šú‰»(‰üsƒR[ƒhŒŸo‚ÅƒŠƒZƒbƒg‚·‚×‚«ˆ—j
-    					InputStream inStream = btSocket.getInputStream(); //ƒf[ƒ^óM—pƒXƒgƒŠ[ƒ€
-    					int size=0; //óMƒf[ƒ^ƒTƒCƒY
-    					int maxsize = 1024; //Å‘åóMƒf[ƒ^ƒTƒCƒY
-    					final byte[] buffer = new byte[maxsize]; //óMƒf[ƒ^ƒoƒbƒtƒ@
+                		// ãƒ‡ãƒ¼ã‚¿å—ä¿¡åˆæœŸåŒ–(æ”¹è¡Œã‚³ãƒ¼ãƒ‰æ¤œå‡ºã§ãƒªã‚»ãƒƒãƒˆã™ã¹ãå‡¦ç†ï¼‰
+    					InputStream inStream = btSocket.getInputStream(); //ãƒ‡ãƒ¼ã‚¿å—ä¿¡ç”¨ã‚¹ãƒˆãƒªãƒ¼ãƒ 
+    					int size=0; //å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º
+    					int maxsize = 1024; //æœ€å¤§å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚º
+    					final byte[] buffer = new byte[maxsize]; //å—ä¿¡ãƒ‡ãƒ¼ã‚¿ãƒãƒƒãƒ•ã‚¡
 
-    					// ‰üsƒR[ƒh‚ªo‚Ä‚­‚é‚Ü‚Å“Ç‚İ‚İ‘±‚¯‚é
+    					// æ”¹è¡Œã‚³ãƒ¼ãƒ‰ãŒå‡ºã¦ãã‚‹ã¾ã§èª­ã¿è¾¼ã¿ç¶šã‘ã‚‹
     					while(!halt){
-    						// “Ç‚İ‚İ
+    						// èª­ã¿è¾¼ã¿
     						int rsize = inStream.read(buffer, size, 1);
 
-							//‰üs‚ªo‚Ä‚«‚½‚©”»’f
-    						final int CODE_LF = 10; //‰üsƒR[ƒh
-    						size  = size + rsize; //“Ç‚İ‚İƒTƒCƒYXV
+							//æ”¹è¡ŒãŒå‡ºã¦ããŸã‹åˆ¤æ–­
+    						final int CODE_LF = 10; //æ”¹è¡Œã‚³ãƒ¼ãƒ‰
+    						size  = size + rsize; //èª­ã¿è¾¼ã¿ã‚µã‚¤ã‚ºæ›´æ–°
     						if (buffer[size-1]==CODE_LF){
-    							// ‰üs‚ªo‚Ä‚«‚½‚çA•\¦•¶š—ñ‚ğ•ÒW‚µ‚Äwhile”²‚¯‚é
+    							// æ”¹è¡ŒãŒå‡ºã¦ããŸã‚‰ã€è¡¨ç¤ºæ–‡å­—åˆ—ã‚’ç·¨é›†ã—ã¦whileæŠœã‘ã‚‹
     							String str = new String(buffer);
     							str_txtview = str.substring(0, size) + str_txtview;
     							final int str_txtview_maxlen =  1024*20;
     							if (str_txtview.length() > str_txtview_maxlen){
-    								//TextView‚É•\¦‚·‚é•¶š—ñ‚ª’·‚·‚¬‚é‚ÍŒã‚ë•”•ª‚ğØ‚èÌ‚Ä‚é
+    								//TextViewã«è¡¨ç¤ºã™ã‚‹æ–‡å­—åˆ—ãŒé•·ã™ãã‚‹æ™‚ã¯å¾Œã‚éƒ¨åˆ†ã‚’åˆ‡ã‚Šæ¨ã¦ã‚‹
     								str_txtview = str_txtview.substring(0, str_txtview_maxlen); 
     							}
-    							// Ÿ‚Ìƒf[ƒ^‚ğ‘Ò‚Â‚½‚ßƒf[ƒ^óM‰Šú‰»‚ğs‚¤‚×‚­break
+    							// æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã‚’å¾…ã¤ãŸã‚ãƒ‡ãƒ¼ã‚¿å—ä¿¡åˆæœŸåŒ–ã‚’è¡Œã†ã¹ãbreak
     							break;
     						}else if (size+1 > maxsize){
-        						// ‰üs‚ªo‚È‚¢‚Ü‚Ü“Ç‚İ‚İƒTƒCƒY‚ªè‡’lˆÈã‚É‚È‚Á‚½‚çƒGƒ‰[‚Æ”»’f‚µ‚Ä“Ç‚İ‚İ•úŠü
+        						// æ”¹è¡ŒãŒå‡ºãªã„ã¾ã¾èª­ã¿è¾¼ã¿ã‚µã‚¤ã‚ºãŒé–¾å€¤ä»¥ä¸Šã«ãªã£ãŸã‚‰ã‚¨ãƒ©ãƒ¼ã¨åˆ¤æ–­ã—ã¦èª­ã¿è¾¼ã¿æ”¾æ£„
     		                	Log.e(LOG_TAG, "Data length is too long.");
     							break;
     						}else{
-    							// ‰üs‚ª‚Ü‚¾o‚È‚¢AŠ‚ÂAóMƒf[ƒ^ƒTƒCƒY‚É—]—T‚ ‚è
-    							// Ÿ‚Ìƒf[ƒ^‚ğóM‚·‚é‚×‚­A‚±‚±‚Å‚Í‰½‚à‚µ‚È‚¢
+    							// æ”¹è¡ŒãŒã¾ã å‡ºãªã„ã€ä¸”ã¤ã€å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºã«ä½™è£•ã‚ã‚Š
+    							// æ¬¡ã®ãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡ã™ã‚‹ã¹ãã€ã“ã“ã§ã¯ä½•ã‚‚ã—ãªã„
     						}
                 		}
                 	}
@@ -210,21 +210,21 @@ public class MainActivity extends Activity {
         });
     }
     
-    // ‰æ–ÊXVƒ^ƒCƒ}[‹N“®
+    // ç”»é¢æ›´æ–°ã‚¿ã‚¤ãƒãƒ¼èµ·å‹•
     private void startDisplayUpdater(){
-    	// ˆê’èŠÔŠu–ˆ‚ÉÀs‚µ‚½‚¢ˆ—‚Ì’è‹`
+    	// ä¸€å®šé–“éš”æ¯ã«å®Ÿè¡Œã—ãŸã„å‡¦ç†ã®å®šç¾©
 		final TextView tv = (TextView)findViewById(R.id.txtMain);
 		final Runnable updateUI = new Runnable(){
 			@Override
 			public void run() {
-				// TextView‚Ì•¶š—ñ‚ğXV
+				// TextViewã®æ–‡å­—åˆ—ã‚’æ›´æ–°
 				tv.setText(str_txtview);
 			}
 		};
 		
-		// ƒ^ƒCƒ}[ì¬‚Æ‹N“®
-		// ˆê’èŠúŠÔ–ˆ‚É‰æ–ÊXVˆ—‚ğÀs
-		long period = 50; //‰æ–ÊXVŠÔŠu
+		// ã‚¿ã‚¤ãƒãƒ¼ä½œæˆã¨èµ·å‹•
+		// ä¸€å®šæœŸé–“æ¯ã«ç”»é¢æ›´æ–°å‡¦ç†ã‚’å®Ÿè¡Œ
+		long period = 50; //ç”»é¢æ›´æ–°é–“éš”
 		final Handler handler = new Handler();
     	Timer timer = new Timer();
     	timer.schedule(new TimerTask(){
